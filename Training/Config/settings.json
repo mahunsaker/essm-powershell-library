@@ -1,0 +1,5 @@
+{
+  "ReportFolder": "./Reports",
+  "WarningPercent": 85,
+  "IncludeProcesses": true
+}
