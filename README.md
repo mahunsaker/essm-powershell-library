@@ -1,53 +1,56 @@
 # ESSM PowerShell Reuse Library
 
-**Offline-first, searchable PowerShell examples and reusable functions.**
+**Search first. Reuse existing work. Test locally. Publish optionally.**
 
-This is the **public-safe publication candidate**, not a copy of the complete private ESSM recovery archive. It contains generic sample scripts and a small composable module. It deliberately excludes private historical Admin Console versions, employer-origin code and configurations, personal host inventory, internal network details, and credential-bearing source files.
+This public repository is a **sanitized, offline-first reference library**, not the private historical development archive. It contains generic training examples, reusable read-only functions, local inventory tools, tests, and development procedures. It deliberately excludes employer-owned source, internal network configurations, credentials, and unreviewed Admin Console history.
 
-> **Status:** Publication candidate; static checks only. Test on your own equipment before using. No source here is warranted or certified for production.
+> **Status:** Public sample / candidate code; static provenance and Git object integrity checked. **Not runtime-tested or production-approved.** Review scripts and run them on a personal test system before use.
 
-## Start without GitHub
+## Find what you need
 
-1. Download the ZIP once or copy the folder to your computer. Unzip to a normal directory; `git` is **not needed**.
-2. Open `BROWSE-OFFLINE.html` in any local web browser; search by function, script, process, or tag.
-3. In PowerShell 7:
+- **[INDEX.md](INDEX.md)** — sections for tools, functions, modules, scripts, processes, tests and templates.
+- **[BROWSE-OFFLINE.html](BROWSE-OFFLINE.html)** — searchable browser. Open the file from an extracted local copy of this repository; no network, server or GitHub login required.
+- **[Catalog/assets.csv](Catalog/assets.csv)** — 65 indexed assets with status, file path, and source SHA-256.
 
-   ```powershell
-   Import-Module ./Modules/ESSM.Reuse/ESSM.Reuse.psd1 -Force
-   Find-ESSMAsset -Name 'network'
-   Get-ESSMSystemSnapshot
-   Invoke-ESSMHealthReport -ComputerName 'localhost'
-   ```
+## Work entirely offline
 
-4. For training: `pwsh -NoProfile -File ./Training/Examples/00-StartHere.ps1`.
-5. Run `./Tools/Test-ESSMPublication.ps1` and review findings before releases.
+Download the repository ZIP while connected and copy it to your authorized local workstation. Extract it; the scripts themselves do **not** call GitHub. With PowerShell 7 open in the extracted folder:
 
-GitHub is used solely to **store, share, compare, and retrieve versioned releases**. All catalog searching, source editing, testing, and project creation run locally with no service connectivity. No runtime downloads, API keys, GitHub Actions, or dependency on a Git remote.
+```powershell
+Import-Module ./Modules/ESSM.Reuse/ESSM.Reuse.psd1 -Force
 
-## Sections
+Find-ESSMAsset -Name 'network'
+Get-ESSMSystemSnapshot
+Test-ESSMTcpEndpoint -ComputerName localhost -Port 443
+Invoke-ESSMHealthReport -ComputerName localhost
+```
 
-| Section | Contents |
-| --- | --- |
-| `Modules/` | Reusable importable functions and composition examples |
-| `Training/Examples/` | Beginner-to-advanced PowerShell practice scripts |
-| `Training/Modules/` | Modular function composition training example |
-| `Tools/` | Offline catalog searching, integrity and publication checks |
-| `Catalog/` | File inventory and metadata for offline search |
-| `Docs/` | Design decisions, publishing, safety, release discipline |
-| `Templates/` | Function contract and reuse decision templates |
+For guided training:
 
-## Reuse-first development
+```powershell
+pwsh -NoProfile -File ./Training/Examples/00-StartHere.ps1
+```
+
+For static verification once PowerShell 7 is available:
+
+```powershell
+./Tools/Test-ESSMPublication.ps1 -ParseAll
+```
+
+Pester tests are optional and require Pester 5+ to already be available locally or supplied through an authorized offline source.
+
+## Development standard
 
 **Search → Inspect → Compare → Compose → Test → Document → Version → Distribute offline.**
 
-- `Find-ESSMAsset -Name 'health'` searches the bundled catalog.
-- Copy only the approved, tested components into a project; never import unreviewed historical code.
-- If a routine is repeated, extract it into a single function with a stable interface and tests.
-- Record its dependencies, supported platforms, side effects, limitations, and rollback.
-- Keep real environment settings in untracked local configuration files.
+Before creating a new function, search the existing catalog and review matching contracts. Reuse a tested function when its interface and behavior meet your requirement. If not, compose smaller functions or create a new version; do not silently replace old implementations.
 
-## Scope, licensing and security
+Never run historical code merely because it is cataloged. Each asset has a status: `example`, `candidate`, `tested`, `approved`, or `deprecated`. See [status definitions](Docs/STATUS-CONTRACT.md).
 
-This repository is intended to be published **only after an explicit review** of the candidate and repository visibility. A code license has **not** yet been selected. Public visibility alone does not authorize third-party reuse. See `LICENSE-DECISION.md`.
+## Trust boundary and licensing
 
-No corporate code should be imported unless its owner has explicitly authorized publication. For work environments with restricted connectivity, use the local repository and approved offline transfer procedures, not GitHub access at work.
+This public repository is separate from a private historical recovery archive. **No employer or third-party code should be published without documented permission.** Managed/offline work environments must use approved transfer and deployment processes.
+
+A distribution license has **not** been selected. Until a proper `LICENSE` is added, no open-source license is granted by this repository; see [license decision](LICENSE-DECISION.md). Security concerns and contribution standards are in [SECURITY.md](SECURITY.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+
+GitHub is used only for optional storage, comparison, releases and recovery—**never required to develop, build, test, or run projects.**
