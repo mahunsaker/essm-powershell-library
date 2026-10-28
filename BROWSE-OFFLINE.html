@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ESSM PowerShell – Offline Library Browser</title>
+<style>
+:root{color-scheme:light dark;font:15px system-ui,sans-serif}
+body{max-width:1200px;margin:35px auto;padding:0 22px;line-height:1.5}
+h1{margin-bottom:.1em} .sub{opacity:.76;margin-top:0}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+input,select{font:inherit;padding:9px;border:1px solid #888;border-radius:6px;min-width:190px}
+input{flex:1} table{width:100%;border-collapse:collapse}
+th{text-align:left}td,th{padding:9px 8px;border-bottom:1px solid #8885}
+th{position:sticky;top:0;background:Canvas} a{color:LinkText;overflow-wrap:anywhere}
+.status{font-size:12px;opacity:.75} #count{margin:12px 0;font-weight:600}
+footer{margin:26px 0;font-size:13px;opacity:.75}
+</style></head><body>
+<h1>ESSM PowerShell Reuse Library</h1>
+<p class="sub">Search 65 catalog entries without internet, GitHub, or a web server. Open this page from the extracted repository folder.</p>
+<div class="controls">
+<input id="q" type="search" placeholder="Search name, category, path…" aria-label="Search assets">
+<select id="kind" aria-label="Filter by kind"><option value="">All kinds</option></select>
+<select id="status" aria-label="Filter by status"><option value="">All statuses</option></select>
+</div>
+<div id="count" aria-live="polite"></div>
+<table><thead><tr><th>Kind</th><th>Name</th><th>Category</th><th>Status</th><th>Local file</th></tr></thead><tbody id="rows"></tbody></table>
+<footer>Local asset discovery only. Entries labeled candidate or example are not production-approved.
+For full descriptions and SHA-256 values, open Catalog/assets.csv or run Find-ESSMAsset in PowerShell 7.</footer>
+<script>
+'use strict';
+const records="Module|ESSM.Reuse|Modules|candidate|Modules/ESSM.Reuse/ESSM.Reuse.psd1\nModule|ESSM.Reuse|Modules|candidate|Modules/ESSM.Reuse/ESSM.Reuse.psm1\nFunction|Find-ESSMAsset|Modules|candidate|Modules/ESSM.Reuse/Public/Find-ESSMAsset.ps1\nFunction|Get-ESSMFileInventory|Modules|candidate|Modules/ESSM.Reuse/Public/Get-ESSMFileInventory.ps1\nFunction|Get-ESSMSystemSnapshot|Modules|candidate|Modules/ESSM.Reuse/Public/Get-ESSMSystemSnapshot.ps1\nFunction|Invoke-ESSMHealthReport|Modules|candidate|Modules/ESSM.Reuse/Public/Invoke-ESSMHealthReport.ps1\nFunction|Test-ESSMTcpEndpoint|Modules|candidate|Modules/ESSM.Reuse/Public/Test-ESSMTcpEndpoint.ps1\nDocumentation|hosts|Config|example|Training/Config/hosts.csv\nDocumentation|settings|Config|example|Training/Config/settings.json\nScript|00-StartHere|Examples|example|Training/Examples/00-StartHere.ps1\nScript|01-DiscoverCommands|Examples|example|Training/Examples/01-DiscoverCommands.ps1\nScript|02-ObjectsPipeline|Examples|example|Training/Examples/02-ObjectsPipeline.ps1\nScript|03-VariablesTypes|Examples|example|Training/Examples/03-VariablesTypes.ps1\nScript|04-CollectionsLoops|Examples|example|Training/Examples/04-CollectionsLoops.ps1\nScript|05-Parameters|Examples|example|Training/Examples/05-Parameters.ps1\nScript|06-FileInventory|Examples|example|Training/Examples/06-FileInventory.ps1\nScript|07-CsvImportExport|Examples|example|Training/Examples/07-CsvImportExport.ps1\nScript|08-JsonSettings|Examples|example|Training/Examples/08-JsonSettings.ps1\nScript|09-TryCatch|Examples|example|Training/Examples/09-TryCatch.ps1\nScript|10-Functions|Examples|example|Training/Examples/10-Functions.ps1\nScript|11-AdvancedPipelineFunction|Examples|example|Training/Examples/11-AdvancedPipelineFunction.ps1\nScript|12-GetDiskSpace|Examples|example|Training/Examples/12-GetDiskSpace.ps1\nScript|13-GetProcessReport|Examples|example|Training/Examples/13-GetProcessReport.ps1\nScript|14-TestTcpPort|Examples|example|Training/Examples/14-TestTcpPort.ps1\nScript|15-GetDnsAddresses|Examples|example|Training/Examples/15-GetDnsAddresses.ps1\nScript|16-GetLogMatches|Examples|example|Training/Examples/16-GetLogMatches.ps1\nScript|17-WriteStructuredLog|Examples|example|Training/Examples/17-WriteStructuredLog.ps1\nScript|18-CopyBackupWhatIf|Examples|example|Training/Examples/18-CopyBackupWhatIf.ps1\nScript|19-GetWindowsServices|Examples|example|Training/Examples/19-GetWindowsServices.ps1\nScript|20-GetWindowsEvents|Examples|example|Training/Examples/20-GetWindowsEvents.ps1\nScript|21-GetNetIpConfig|Examples|example|Training/Examples/21-GetNetIpConfig.ps1\nScript|22-GetRemoteWindowsCim|Examples|example|Training/Examples/22-GetRemoteWindowsCim.ps1\nScript|23-GetRemoteReadOnly|Examples|example|Training/Examples/23-GetRemoteReadOnly.ps1\nScript|24-ExportHtmlHealth|Examples|example|Training/Examples/24-ExportHtmlHealth.ps1\nScript|25-FolderCleanupPreview|Examples|example|Training/Examples/25-FolderCleanupPreview.ps1\nScript|26-NewLabFolder|Examples|example|Training/Examples/26-NewLabFolder.ps1\nScript|27-IncrementalJsonReport|Examples|example|Training/Examples/27-IncrementalJsonReport.ps1\nScript|28-ScheduledTaskInstruction|Examples|example|Training/Examples/28-ScheduledTaskInstruction.ps1\nScript|29-MeasureCommand|Examples|example|Training/Examples/29-MeasureCommand.ps1\nScript|30-GetFileHashAudit|Examples|example|Training/Examples/30-GetFileHashAudit.ps1\nScript|31-PipelineComposition|Examples|example|Training/Examples/31-PipelineComposition.ps1\nScript|32-DataDrivenFleet|Examples|example|Training/Examples/32-DataDrivenFleet.ps1\nScript|33-ComposeDailyReport|Examples|example|Training/Examples/33-ComposeDailyReport.ps1\nScript|34-GetCertExpiry|Examples|example|Training/Examples/34-GetCertExpiry.ps1\nScript|35-FlowControl|Examples|example|Training/Examples/35-FlowControl.ps1\nScript|36-Splatting|Examples|example|Training/Examples/36-Splatting.ps1\nScript|37-BackgroundJob|Examples|example|Training/Examples/37-BackgroundJob.ps1\nScript|38-InjectDependency|Examples|example|Training/Examples/38-InjectDependency.ps1\nDocumentation|Practice-Log|Exercises|example|Training/Exercises/Practice-Log.txt\nDocumentation|ESSM.AdminKit|Modules|example|Training/Modules/ESSM.AdminKit/ESSM.AdminKit.psd1\nDocumentation|ESSM.AdminKit|Modules|example|Training/Modules/ESSM.AdminKit/ESSM.AdminKit.psm1\nScript|Get-ESSMPlatform|Modules|example|Training/Modules/ESSM.AdminKit/Private/Get-ESSMPlatform.ps1\nScript|Get-ESSMHostSummary|Modules|example|Training/Modules/ESSM.AdminKit/Public/Get-ESSMHostSummary.ps1\nScript|Invoke-ESSMInventory|Modules|example|Training/Modules/ESSM.AdminKit/Public/Invoke-ESSMInventory.ps1\nTest|ESSM.AdminKit.Tests|Tests|example|Training/Tests/ESSM.AdminKit.Tests.ps1\nTool|Find-ESSMAsset|Tools|candidate|Tools/Find-ESSMAsset.ps1\nTool|Test-ESSMPublication|Tools|candidate|Tools/Test-ESSMPublication.ps1\nTool|Update-ESSMCatalog|Tools|candidate|Tools/Update-ESSMCatalog.ps1\nDocumentation|GITHUB-PUBLISHING|Docs|candidate|Docs/GITHUB-PUBLISHING.md\nDocumentation|OFFLINE-ARCHITECTURE|Docs|candidate|Docs/OFFLINE-ARCHITECTURE.md\nDocumentation|PUBLICATION-CHECKLIST|Docs|candidate|Docs/PUBLICATION-CHECKLIST.md\nDocumentation|RELEASE-PROCESS|Docs|candidate|Docs/RELEASE-PROCESS.md\nDocumentation|STATUS-CONTRACT|Docs|candidate|Docs/STATUS-CONTRACT.md\nTemplate|FUNCTION-CONTRACT|Templates|candidate|Templates/FUNCTION-CONTRACT.md\nTemplate|REUSE-DECISION|Templates|candidate|Templates/REUSE-DECISION.md".trim().split('\n').map(s=>s.split('|'));
+const q=document.getElementById('q'),kind=document.getElementById('kind'),
+status=document.getElementById('status'),rows=document.getElementById('rows'),
+count=document.getElementById('count');
+for(const [el,i] of [[kind,0],[status,3]]) {
+ const values=[...new Set(records.map(r=>r[i]))].sort();
+ for(const v of values){const o=document.createElement('option');o.value=v;o.textContent=v;el.append(o);}
+}
+function render(){
+ rows.textContent='';
+ const search=q.value.trim().toLowerCase();
+ let filtered=records.filter(r=>(!kind.value||r[0]===kind.value)&&(!status.value||r[3]===status.value)&&
+ (!search||r.join(' ').toLowerCase().includes(search)));
+ const frag=document.createDocumentFragment();
+ for(const r of filtered) {
+ const tr=document.createElement('tr');
+ for(let i=0;i<r.length;i++){
+ const td=document.createElement('td');
+ if(i===4){const a=document.createElement('a');a.href='./'+r[i];a.textContent=r[i];td.append(a);}
+ else {td.textContent=r[i];if(i===3)td.className='status';}
+ tr.append(td);
+ } frag.append(tr);
+ }
+ rows.append(frag);
+ count.textContent=filtered.length+' of '+records.length+' entries';
+}
+for(const el of [q,kind,status])el.addEventListener('input',render);
+render();
+</script></body></html>
