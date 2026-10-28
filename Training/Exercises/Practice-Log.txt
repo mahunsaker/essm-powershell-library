@@ -1,0 +1,4 @@
+2026-10-28T08:00:00Z INFO Daily health check started
+2026-10-28T08:01:00Z WARN Disk usage exceeds 80 percent
+2026-10-28T08:02:00Z ERROR WinRM unreachable: LAB02
+2026-10-28T08:03:00Z INFO Daily health check finished
