@@ -1,0 +1,22 @@
+# Local/private environment data: never publish
+.local/
+private/
+secrets/
+Inbox/
+config.local.*
+*.secret.*
+*.pfx
+*.p12
+*.pem
+*.key
+*.cer
+*.env
+.env*
+*.log
+*.bak
+*.tmp
+Reports/
+Output/
+__pycache__/
+.vscode/
+.idea/
